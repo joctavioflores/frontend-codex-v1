@@ -33,7 +33,7 @@ export const ProductsPage = () => {
   const [formResetVersion, setFormResetVersion] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
+  const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -93,7 +93,7 @@ export const ProductsPage = () => {
   };
 
   const handleUpdate = async (
-    productId: string,
+    productId: number,
     payload: UpdateProductPayload,
   ) => {
     if (!Object.keys(payload).length) {
@@ -156,7 +156,7 @@ export const ProductsPage = () => {
     <main>
       <header>
         <h1>Productos</h1>
-        <p>Administra el catálogo consumiendo el endpoint `/products`.</p>
+        <p>Administra el catálogo consumiendo el endpoint `/api/v1/products`.</p>
         <nav aria-label="Navegación principal">
           <Link to="/profile">Perfil</Link>{' '}
           <Link to="/quotes">Cotizaciones</Link>{' '}
@@ -199,6 +199,7 @@ export const ProductsPage = () => {
                 <li key={product.id}>
                   <article>
                     <h3>{product.name}</h3>
+                    <p>SKU: {product.sku}</p>
                     <p>{product.description || 'Sin descripción'}</p>
                     <p>
                       Precio: {product.price} {product.currency}

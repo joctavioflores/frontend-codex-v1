@@ -18,7 +18,7 @@ export interface QuoteFormValues {
 }
 
 export interface QuoteItemPreview {
-  productId: string;
+  productId: number;
   productName: string;
   quantity: number;
   unitPrice: number;
@@ -53,7 +53,7 @@ export const createDefaultQuoteFormValues = (): QuoteFormValues => {
   };
 };
 
-const MAX_CUSTOMER_NAME_LENGTH = 120;
+const MAX_CUSTOMER_NAME_LENGTH = 255;
 const MAX_NOTES_LENGTH = 1000;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -75,7 +75,7 @@ export const validateCustomerEmail = (value: string): string | null => {
   const normalizedValue = value.trim();
 
   if (!normalizedValue) {
-    return null;
+    return 'El correo electrónico es obligatorio.';
   }
 
   if (!EMAIL_REGEX.test(normalizedValue)) {
@@ -118,16 +118,17 @@ export const calculateQuotePreview = (
   products: Product[],
 ): QuoteItemPreview[] => {
   return values.items.flatMap((item) => {
-    const product = products.find((candidate) => candidate.id === item.productId);
+    const selectedProductId = Number(item.productId);
+    const product = products.find((candidate) => candidate.id === selectedProductId);
     const quantity = Number(item.quantity.trim());
 
-    if (!product || !Number.isFinite(quantity) || quantity <= 0) {
+    if (!product || !Number.isInteger(selectedProductId) || !Number.isFinite(quantity) || quantity <= 0) {
       return [];
     }
 
     return [
       {
-        productId: product.id,
+        productId: selectedProductId,
         productName: product.name,
         quantity,
         unitPrice: product.price,
@@ -151,8 +152,9 @@ export const validateQuoteForm = (
 
   const itemErrors = values.items.map((item) => {
     const productId = item.productId.trim();
+    const parsedProductId = Number(productId);
     const quantityError = validateItemQuantity(item.quantity) ?? undefined;
-    const productExists = products.some((product) => product.id === productId);
+    const productExists = products.some((product) => product.id === parsedProductId);
     const productError = !productId
       ? 'El producto es obligatorio.'
       : !productExists
@@ -201,11 +203,11 @@ export const hasQuoteFormErrors = (errors: QuoteFormErrors): boolean => {
 export const mapQuoteToFormValues = (quote: Quote): QuoteFormValues => {
   return {
     customerName: quote.customerName,
-    customerEmail: quote.customerEmail ?? '',
+    customerEmail: quote.customerEmail,
     notes: quote.notes ?? '',
     items: quote.items.length
       ? quote.items.map((item) => ({
-          productId: item.productId,
+          productId: String(item.productId),
           quantity: String(item.quantity),
         }))
       : createDefaultQuoteFormValues().items,
@@ -220,13 +222,12 @@ const buildPayload = (
 
   return {
     customerName: values.customerName.trim(),
-    customerEmail: values.customerEmail.trim() || undefined,
+    customerEmail: values.customerEmail.trim(),
     notes: values.notes.trim() || undefined,
+    status: 'draft',
     items: previewItems.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      subtotal: item.subtotal,
     })),
   };
 };

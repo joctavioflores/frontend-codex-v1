@@ -19,7 +19,7 @@ interface ProductFormProps {
   onCancelEdit: () => void;
   onSubmit: (payload: ReturnType<typeof buildCreateProductPayload>) => Promise<void>;
   onUpdate: (
-    productId: string,
+    productId: number,
     payload: ReturnType<typeof buildUpdateProductPayload>,
   ) => Promise<void>;
   productBeingEdited: Product | null;
@@ -75,6 +75,18 @@ export const ProductForm = ({
       </h2>
 
       <form onSubmit={handleSubmit} noValidate>
+        <label htmlFor="product-sku">SKU</label>
+        <input
+          id="product-sku"
+          name="sku"
+          type="text"
+          value={values.sku}
+          onChange={(event) => {
+            setValues((prev) => ({ ...prev, sku: event.target.value }));
+          }}
+        />
+        {errors.sku && <p role="alert">{errors.sku}</p>}
+
         <label htmlFor="product-name">Nombre</label>
         <input
           id="product-name"

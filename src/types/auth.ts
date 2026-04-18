@@ -4,9 +4,10 @@ export interface AuthSession {
 }
 
 export interface AuthUser {
-  id: string;
+  id: number;
   email: string;
   name: string;
+  isActive: boolean;
 }
 
 export interface AuthState {

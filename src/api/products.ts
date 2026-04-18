@@ -1,33 +1,51 @@
-import { delete as remove, get, post, put } from './client';
+import {
+  createProductApiV1ProductsPost,
+  deleteProductApiV1ProductsProductIdDelete,
+  getProductApiV1ProductsProductIdGet,
+  listProductsApiV1ProductsGet,
+  updateProductApiV1ProductsProductIdPut,
+} from '../generated/backend/openapi.client';
 import type {
   CreateProductPayload,
   Product,
   UpdateProductPayload,
 } from '../types/products';
+import {
+  fromProductRead,
+  toCreateProductRequest,
+  toUpdateProductRequest,
+} from './adapters/products';
 
-const PRODUCTS_ENDPOINT = '/products';
-
-export const getProducts = (): Promise<Product[]> => {
-  return get<Product[]>(PRODUCTS_ENDPOINT);
+export const getProducts = async (): Promise<Product[]> => {
+  const response = await listProductsApiV1ProductsGet();
+  return response.map(fromProductRead);
 };
 
-export const getProductById = (id: string): Promise<Product> => {
-  return get<Product>(`${PRODUCTS_ENDPOINT}/${id}`);
+export const getProductById = async (id: number): Promise<Product> => {
+  const response = await getProductApiV1ProductsProductIdGet(id);
+  return fromProductRead(response);
 };
 
-export const createProduct = (
+export const createProduct = async (
   payload: CreateProductPayload,
 ): Promise<Product> => {
-  return post<Product, CreateProductPayload>(PRODUCTS_ENDPOINT, payload);
+  const response = await createProductApiV1ProductsPost(
+    toCreateProductRequest(payload),
+  );
+  return fromProductRead(response);
 };
 
-export const updateProduct = (
-  id: string,
+export const updateProduct = async (
+  id: number,
   payload: UpdateProductPayload,
 ): Promise<Product> => {
-  return put<Product, UpdateProductPayload>(`${PRODUCTS_ENDPOINT}/${id}`, payload);
+  const response = await updateProductApiV1ProductsProductIdPut(
+    id,
+    toUpdateProductRequest(payload),
+  );
+  return fromProductRead(response);
 };
 
-export const deleteProduct = (id: string): Promise<void> => {
-  return remove<void>(`${PRODUCTS_ENDPOINT}/${id}`);
+export const deleteProduct = (id: number): Promise<void> => {
+  return deleteProductApiV1ProductsProductIdDelete(id);
 };

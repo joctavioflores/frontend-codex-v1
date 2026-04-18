@@ -25,7 +25,7 @@ interface QuoteFormProps {
   onCancelEdit: () => void;
   onSubmit: (payload: ReturnType<typeof buildCreateQuotePayload>) => Promise<void>;
   onUpdate: (
-    quoteId: string,
+    quoteId: number,
     payload: ReturnType<typeof buildUpdateQuotePayload>,
   ) => Promise<void>;
   products: Product[];
@@ -68,7 +68,10 @@ export const QuoteForm = ({
     }
 
     if (quoteBeingEdited) {
-      await onUpdate(quoteBeingEdited.id, buildUpdateQuotePayload(values, products));
+      await onUpdate(quoteBeingEdited.id, {
+        ...buildUpdateQuotePayload(values, products),
+        status: quoteBeingEdited.status,
+      });
       return;
     }
 
@@ -145,7 +148,7 @@ export const QuoteForm = ({
           {values.items.map((item, index) => {
             const itemError = errors.itemErrors[index] ?? {};
             const previewItem = previewItems.find(
-              (candidate) => candidate.productId === item.productId,
+              (candidate) => candidate.productId === Number(item.productId),
             );
 
             return (
