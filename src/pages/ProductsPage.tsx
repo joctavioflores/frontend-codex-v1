@@ -159,6 +159,7 @@ export const ProductsPage = () => {
         <p>Administra el catálogo consumiendo el endpoint `/products`.</p>
         <nav aria-label="Navegación principal">
           <Link to="/profile">Perfil</Link>{' '}
+          <Link to="/quotes">Cotizaciones</Link>{' '}
           <button type="button" onClick={logout}>
             Cerrar sesión
           </button>
