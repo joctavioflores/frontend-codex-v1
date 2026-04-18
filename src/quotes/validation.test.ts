@@ -14,14 +14,16 @@ import {
 
 const products: Product[] = [
   {
-    id: 'p-1',
+    id: 1,
+    sku: 'LAP-001',
     name: 'Laptop',
     description: 'Equipo portátil',
     price: 15000,
     currency: 'MXN',
   },
   {
-    id: 'p-2',
+    id: 2,
+    sku: 'MOU-001',
     name: 'Mouse',
     description: 'Accesorio',
     price: 500,
@@ -37,8 +39,8 @@ describe('quote validation', () => {
         customerEmail: 'compras@acme.com',
         notes: '',
         items: [
-          { productId: 'p-1', quantity: '2' },
-          { productId: 'p-2', quantity: '3' },
+          { productId: '1', quantity: '2' },
+          { productId: '2', quantity: '3' },
         ],
       },
       products,
@@ -46,7 +48,7 @@ describe('quote validation', () => {
 
     expect(preview).toEqual([
       {
-        productId: 'p-1',
+        productId: 1,
         productName: 'Laptop',
         quantity: 2,
         unitPrice: 15000,
@@ -54,7 +56,7 @@ describe('quote validation', () => {
         currency: 'MXN',
       },
       {
-        productId: 'p-2',
+        productId: 2,
         productName: 'Mouse',
         quantity: 3,
         unitPrice: 500,
@@ -76,11 +78,11 @@ describe('quote validation', () => {
       validateQuoteForm(
         {
           customerName: 'Acme',
-          customerEmail: '',
+          customerEmail: 'compras@acme.com',
           notes: '',
           items: [
-            { productId: 'p-1', quantity: '1' },
-            { productId: 'p-1', quantity: '2' },
+            { productId: '1', quantity: '1' },
+            { productId: '1', quantity: '2' },
           ],
         },
         products,
@@ -102,8 +104,8 @@ describe('quote validation', () => {
           customerEmail: '  compras@acme.com  ',
           notes: '  Entrega en 48 horas  ',
           items: [
-            { productId: 'p-1', quantity: '2' },
-            { productId: 'p-2', quantity: '1' },
+            { productId: '1', quantity: '2' },
+            { productId: '2', quantity: '1' },
           ],
         },
         products,
@@ -112,18 +114,15 @@ describe('quote validation', () => {
       customerName: 'Acme Corp',
       customerEmail: 'compras@acme.com',
       notes: 'Entrega en 48 horas',
+      status: 'draft',
       items: [
         {
-          productId: 'p-1',
+          productId: 1,
           quantity: 2,
-          unitPrice: 15000,
-          subtotal: 30000,
         },
         {
-          productId: 'p-2',
+          productId: 2,
           quantity: 1,
-          unitPrice: 500,
-          subtotal: 500,
         },
       ],
     });
@@ -132,16 +131,19 @@ describe('quote validation', () => {
   it('mapea la cotización a valores de formulario', () => {
     expect(
       mapQuoteToFormValues({
-        id: 'q-1',
+        id: 1,
+        folio: 'COT-0001',
         customerName: 'Acme',
         customerEmail: 'compras@acme.com',
         notes: undefined,
+        status: 'draft',
         currency: 'MXN',
-        subtotal: 1000,
         total: 1000,
         items: [
           {
-            productId: 'p-2',
+            id: 5,
+            productId: 2,
+            productName: 'Mouse',
             quantity: 2,
             unitPrice: 500,
             subtotal: 1000,
@@ -152,7 +154,7 @@ describe('quote validation', () => {
       customerName: 'Acme',
       customerEmail: 'compras@acme.com',
       notes: '',
-      items: [{ productId: 'p-2', quantity: '2' }],
+      items: [{ productId: '2', quantity: '2' }],
     });
   });
 });

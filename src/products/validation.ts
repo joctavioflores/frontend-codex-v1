@@ -5,6 +5,7 @@ import type {
 } from '../types/products';
 
 export interface ProductFormValues {
+  sku: string;
   name: string;
   description: string;
   price: string;
@@ -12,6 +13,7 @@ export interface ProductFormValues {
 }
 
 export interface ProductFormErrors {
+  sku?: string;
   name?: string;
   description?: string;
   price?: string;
@@ -19,14 +21,34 @@ export interface ProductFormErrors {
 }
 
 export const DEFAULT_PRODUCT_FORM_VALUES: ProductFormValues = {
+  sku: '',
   name: '',
   description: '',
   price: '',
   currency: '',
 };
 
-const MAX_NAME_LENGTH = 120;
+const MAX_SKU_LENGTH = 64;
+const MAX_NAME_LENGTH = 255;
 const MAX_DESCRIPTION_LENGTH = 500;
+
+export const validateProductSku = (value: string): string | null => {
+  const normalizedValue = value.trim();
+
+  if (!normalizedValue) {
+    return 'El SKU es obligatorio.';
+  }
+
+  if (normalizedValue.length < 2) {
+    return 'El SKU debe tener al menos 2 caracteres.';
+  }
+
+  if (normalizedValue.length > MAX_SKU_LENGTH) {
+    return `El SKU no puede exceder ${MAX_SKU_LENGTH} caracteres.`;
+  }
+
+  return null;
+};
 
 export const validateProductName = (value: string): string | null => {
   const normalizedValue = value.trim();
@@ -77,8 +99,8 @@ export const validateProductCurrency = (value: string): string | null => {
     return 'La moneda es obligatoria.';
   }
 
-  if (!/^[A-Z]{3}$/.test(normalizedValue)) {
-    return 'La moneda debe usar un código ISO de 3 letras.';
+  if (!/^[A-Z]{3,8}$/.test(normalizedValue)) {
+    return 'La moneda debe usar un código de 3 a 8 letras.';
   }
 
   return null;
@@ -90,6 +112,7 @@ export const validateProductForm = (
   const descriptionError = validateProductDescription(values.description);
 
   return {
+    sku: validateProductSku(values.sku) ?? undefined,
     name: validateProductName(values.name) ?? undefined,
     price: validateProductPrice(values.price) ?? undefined,
     currency: validateProductCurrency(values.currency) ?? undefined,
@@ -103,6 +126,7 @@ export const hasProductFormErrors = (errors: ProductFormErrors): boolean => {
 
 export const mapProductToFormValues = (product: Product): ProductFormValues => {
   return {
+    sku: product.sku,
     name: product.name,
     description: product.description ?? '',
     price: String(product.price),
@@ -114,6 +138,7 @@ const buildBasePayload = (
   values: ProductFormValues,
 ): CreateProductPayload => {
   return {
+    sku: values.sku.trim(),
     name: values.name.trim(),
     description: values.description.trim() || undefined,
     price: Number(values.price.trim()),
@@ -137,6 +162,10 @@ export const buildUpdateProductPayload = (
 
   if (initialPayload.name !== nextPayload.name) {
     payload.name = nextPayload.name;
+  }
+
+  if (initialPayload.sku !== nextPayload.sku) {
+    payload.sku = nextPayload.sku;
   }
 
   if (initialPayload.description !== nextPayload.description) {

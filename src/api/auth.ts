@@ -1,27 +1,32 @@
+import {
+  forgotPasswordApiV1AuthForgotPasswordPost,
+  loginApiV1AuthLoginPost,
+  meApiV1AuthMeGet,
+  resetPasswordApiV1AuthResetPasswordPost,
+} from '../generated/backend/openapi.client';
 import type { AuthUser } from '../types/auth';
-import { get, post } from './client';
+import {
+  fromForgotPasswordResponse,
+  fromTokenResponse,
+  fromUserRead,
+  toLoginRequest,
+  toResetPasswordRequest,
+  type ForgotPasswordPayload,
+  type LoginPayload,
+  type LoginResponse,
+  type ResetPasswordPayload,
+} from './adapters/auth';
 
 const TOKEN_STORAGE_KEY = 'auth_token';
 
 let inMemoryAccessToken: string | null = null;
 
-export interface LoginPayload {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  accessToken: string;
-}
-
-export interface ForgotPasswordPayload {
-  email: string;
-}
-
-export interface ResetPasswordPayload {
-  token: string;
-  password: string;
-}
+export type {
+  ForgotPasswordPayload,
+  LoginPayload,
+  LoginResponse,
+  ResetPasswordPayload,
+};
 
 const readPersistedToken = (): string | null => {
   if (typeof window === 'undefined') {
@@ -76,27 +81,27 @@ export const clearAccessToken = (): void => {
 };
 
 export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
-  return post<LoginResponse, LoginPayload>('/auth/login', payload);
+  const response = await loginApiV1AuthLoginPost(toLoginRequest(payload));
+  return fromTokenResponse(response);
 };
 
 export const getMyProfile = async (): Promise<AuthUser> => {
-  return get<AuthUser>('/auth/me');
+  const response = await meApiV1AuthMeGet();
+  return fromUserRead(response);
 };
 
 export const forgotPassword = async (
   payload: ForgotPasswordPayload,
-): Promise<{ message: string }> => {
-  return post<{ message: string }, ForgotPasswordPayload>(
-    '/auth/forgot-password',
-    payload,
-  );
+): Promise<{ message: string; resetToken?: string }> => {
+  const response = await forgotPasswordApiV1AuthForgotPasswordPost(payload);
+  return fromForgotPasswordResponse(response);
 };
 
 export const resetPassword = async (
   payload: ResetPasswordPayload,
-): Promise<{ message: string }> => {
-  return post<{ message: string }, ResetPasswordPayload>(
-    '/auth/reset-password',
-    payload,
+): Promise<{ message: string; resetToken?: string }> => {
+  const response = await resetPasswordApiV1AuthResetPasswordPost(
+    toResetPasswordRequest(payload),
   );
+  return fromForgotPasswordResponse(response);
 };

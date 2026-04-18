@@ -1,36 +1,38 @@
-import type { Product } from './products';
-
 export interface QuoteItem {
-  productId: string;
+  id?: number;
+  productId: number;
+  productName?: string;
   quantity: number;
   unitPrice: number;
-  subtotal?: number;
-  product?: Product;
+  subtotal: number;
 }
 
+export type QuoteStatus = 'draft' | 'sent' | 'approved' | 'rejected';
+
 export interface Quote {
-  id: string;
+  id: number;
+  folio: string;
   customerName: string;
-  customerEmail?: string;
+  customerEmail: string;
   notes?: string;
+  status: QuoteStatus;
   items: QuoteItem[];
-  subtotal: number;
   total: number;
   currency: string;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 export interface CreateQuotePayload {
   customerName: string;
-  customerEmail?: string;
+  customerEmail: string;
   notes?: string;
-  items: QuoteItem[];
+  status?: QuoteStatus;
+  items: Array<Pick<QuoteItem, 'productId' | 'quantity'>>;
 }
 
 export interface UpdateQuotePayload {
   customerName: string;
-  customerEmail?: string;
+  customerEmail: string;
   notes?: string;
-  items: QuoteItem[];
+  status?: QuoteStatus;
+  items: Array<Pick<QuoteItem, 'productId' | 'quantity'>>;
 }

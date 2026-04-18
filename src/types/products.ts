@@ -1,5 +1,6 @@
 export interface Product {
-  id: string;
+  id: number;
+  sku: string;
   name: string;
   description?: string;
   price: number;
@@ -7,6 +8,7 @@ export interface Product {
 }
 
 export interface CreateProductPayload {
+  sku: string;
   name: string;
   description?: string;
   price: number;
@@ -14,6 +16,7 @@ export interface CreateProductPayload {
 }
 
 export interface UpdateProductPayload {
+  sku?: string;
   name?: string;
   description?: string;
   price?: number;

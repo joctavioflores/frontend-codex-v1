@@ -9,6 +9,7 @@ import {
   validateProductCurrency,
   validateProductForm,
   validateProductPrice,
+  validateProductSku,
 } from './validation';
 
 describe('product validation', () => {
@@ -17,14 +18,20 @@ describe('product validation', () => {
       validateProductForm({
         name: 'Laptop Pro',
         description: 'Equipo para desarrollo',
+        sku: 'LP-001',
         price: '12999.99',
         currency: 'mxn',
       }),
     ).toEqual({
+      sku: undefined,
       name: undefined,
       price: undefined,
       currency: undefined,
     });
+  });
+
+  it('rechaza sku vacío', () => {
+    expect(validateProductSku('')).toBe('El SKU es obligatorio.');
   });
 
   it('rechaza precio vacío', () => {
@@ -37,7 +44,7 @@ describe('product validation', () => {
 
   it('rechaza moneda con formato inválido', () => {
     expect(validateProductCurrency('peso')).toBe(
-      'La moneda debe usar un código ISO de 3 letras.',
+      'La moneda debe usar un código de 3 a 8 letras.',
     );
   });
 
@@ -55,13 +62,15 @@ describe('product validation', () => {
   it('mapea producto a valores de formulario', () => {
     expect(
       mapProductToFormValues({
-        id: 'p-1',
+        id: 1,
+        sku: 'MSE-001',
         name: 'Mouse',
         description: undefined,
         price: 299.5,
         currency: 'MXN',
       }),
     ).toEqual({
+      sku: 'MSE-001',
       name: 'Mouse',
       description: '',
       price: '299.5',
@@ -72,12 +81,14 @@ describe('product validation', () => {
   it('normaliza payload de creación', () => {
     expect(
       buildCreateProductPayload({
+        sku: '  SKU-1  ',
         name: '  Teclado  ',
         description: '  Mecánico  ',
         price: ' 1599 ',
         currency: ' usd ',
       }),
     ).toEqual({
+      sku: 'SKU-1',
       name: 'Teclado',
       description: 'Mecánico',
       price: 1599,
@@ -89,12 +100,14 @@ describe('product validation', () => {
     expect(
       buildUpdateProductPayload(
         {
+          sku: 'MON-001',
           name: 'Monitor',
           description: '',
           price: '200',
           currency: 'USD',
         },
         {
+          sku: 'MON-002',
           name: 'Monitor',
           description: '27 pulgadas',
           price: '250',
@@ -102,6 +115,7 @@ describe('product validation', () => {
         },
       ),
     ).toEqual({
+      sku: 'MON-002',
       description: '27 pulgadas',
       price: 250,
     });

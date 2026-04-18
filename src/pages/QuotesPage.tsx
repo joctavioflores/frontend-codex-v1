@@ -68,8 +68,8 @@ export const QuotesPage = () => {
   const [formResetVersion, setFormResetVersion] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deletingQuoteId, setDeletingQuoteId] = useState<string | null>(null);
-  const [pdfActionQuoteId, setPdfActionQuoteId] = useState<string | null>(null);
+  const [deletingQuoteId, setDeletingQuoteId] = useState<number | null>(null);
+  const [pdfActionQuoteId, setPdfActionQuoteId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -136,7 +136,7 @@ export const QuotesPage = () => {
   };
 
   const handleUpdate = async (
-    quoteId: string,
+    quoteId: number,
     payload: UpdateQuotePayload,
   ) => {
     setIsSubmitting(true);
@@ -215,7 +215,7 @@ export const QuotesPage = () => {
       <header>
         <h1>Cotizaciones</h1>
         <p>
-          Administra cotizaciones comerciales consumiendo `/quotes` y `/quotes/{'{id}'}/pdf`.
+          Administra cotizaciones comerciales consumiendo `/api/v1/quotes` y `/api/v1/quotes/{'{id}'}/pdf`.
         </p>
         <nav aria-label="Navegación principal">
           <Link to="/profile">Perfil</Link>{' '}
@@ -266,7 +266,9 @@ export const QuotesPage = () => {
                 <li key={quote.id}>
                   <article>
                     <h3>{quote.customerName}</h3>
-                    <p>Correo: {quote.customerEmail || 'No especificado'}</p>
+                    <p>Folio: {quote.folio}</p>
+                    <p>Correo: {quote.customerEmail}</p>
+                    <p>Estatus: {quote.status}</p>
                     <p>Productos: {quote.items.length}</p>
                     <p>Total: {formatAmount(quote.total, quote.currency)}</p>
                     {quote.notes && <p>Notas: {quote.notes}</p>}
