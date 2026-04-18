@@ -22,9 +22,10 @@ export const ProfilePage = () => {
         <strong>Email:</strong> {user?.email}
       </p>
 
-      <p>
+      <nav aria-label="Navegación secundaria">
+        <Link to="/quotes">Ir al módulo de cotizaciones</Link>{' '}
         <Link to="/products">Ir al CRUD de productos</Link>
-      </p>
+      </nav>
 
       <button type="button" onClick={logout}>
         Cerrar sesión
