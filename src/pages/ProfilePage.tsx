@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 import { useAuth } from '../auth/useAuth';
 
@@ -19,6 +20,10 @@ export const ProfilePage = () => {
       </p>
       <p>
         <strong>Email:</strong> {user?.email}
+      </p>
+
+      <p>
+        <Link to="/products">Ir al CRUD de productos</Link>
       </p>
 
       <button type="button" onClick={logout}>

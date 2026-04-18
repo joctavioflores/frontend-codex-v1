@@ -6,6 +6,7 @@ import { ForgotPasswordPage } from '../pages/auth/ForgotPasswordPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { ResetPasswordPage } from '../pages/auth/ResetPasswordPage';
 import { ProfilePage } from '../pages/ProfilePage';
+import { ProductsPage } from '../pages/ProductsPage';
 
 export const AuthRoutes = () => {
   return (
@@ -17,9 +18,10 @@ export const AuthRoutes = () => {
 
         <Route element={<RequireAuth />}>
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/products" element={<ProductsPage />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/profile" replace />} />
+        <Route path="*" element={<Navigate to="/products" replace />} />
       </Routes>
     </AuthProvider>
   );
